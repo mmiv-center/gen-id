@@ -25,7 +25,7 @@ def usage():
     print("  Generate a random UID based on a given pattern (regular expression). Pattern can")
     print("  be made unique given an exclusion list of already existing pattern provided as a text file")
     print("  with one line per existing ID. Here an example call generating an id based on")
-    print("  three digit numbers:")
+    print("  a fixed prefix PROJ_01_ followed by three digit numbers:")
     print("  > gen-id.py -r 'PROJ_01_[0-9]{3}'")
     print("")
     print("If an exclusion file is provided with -e (--exclusion_file)")
