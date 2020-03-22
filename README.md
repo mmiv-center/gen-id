@@ -17,7 +17,13 @@ come in a sequence.
 
 ### Features
 
-The regular expressions can contain these sub-pattern:
+Regular expressions are well known to parse and match pattern. In this case
+we instead generate random pattern. Because of this use case some features of 
+regular expressions should not be used. As a simple example the use of '+'
+to indicate one or more matches should not be used if patterns are generated as
+it is not clear how many repeats should be generated.
+
+The regular expressions can be composed of these sub-pattern:
  - '[a-z]': ranges of characters or numbers
  - 'PROJ_': fixed sequences of characters
  - '[0-9]{3}': repeats of ranges, same as [0-9][0-9][0-9]
@@ -27,7 +33,7 @@ The regular expressions can contain these sub-pattern:
 
 ### Usage
 
-This program uses python3. Make the file executable to run it as shown below
+This program uses python3, which has to be installed. Make the file executable to run it as shown below
 ```
 > chmod 777 ./gen-id.py
 ```
