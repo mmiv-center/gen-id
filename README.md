@@ -1,6 +1,19 @@
 # gen-id
 
 A simple program to generate an identifier based on a regular expression.
+
+```
+'P_0\d{4}'
+```
+
+```
+P_07168
+P_01433
+P_09783
+P_07444
+P_09491
+```
+
 Such identifiers can be used in research projects as de-identified IDs. If 
 this program is used in such a manner one needs to keep a mapping file of
 the ID (hash-ed) and the generated ID.
