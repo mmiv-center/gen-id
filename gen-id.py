@@ -89,7 +89,11 @@ def generator(ast):
             elif mr[3][0][0] == IN:
                 mr = mr[3][0][1]
                 choice = random.randint(0, len(mr)-1)
-                tt = generator([mr[choice]])
+                tt = generator([mr[choice]]) 
+            else:
+                # we can use the first or the second entry here
+                choice = random.randint(0,1)
+                tt = generator([mr[3][choice]])
             reference_list.append(tt)
             txt = txt + tt
         elif ast[x][0] == BRANCH:
