@@ -14,11 +14,12 @@
 
 import getopt
 import sys
-import sre_parse
+#import sre_parse
+from re import _parser
 import random
 import os
-from sre_constants import *
-
+#from sre_constants import *
+from re import _constants
 
 def usage():
     print("Usage:")
@@ -47,7 +48,7 @@ def usage():
     print("Further examples that show-case pattern that work:")
     print("  > gen-id.py -r 'PROJ_(a|[0-9][a-z][A-Z])_[0-9][0-9][0-9][a-z]'")
     print(
-        "  > ./gen-id.py -r 'PROJ_(a|[0-9][a-z][A-Z])_\1[0-9][0-9][0-9][a-z]_\d{8}_.'")
+        "  > ./gen-id.py -r 'PROJ_(a|[0-9][a-z][A-Z])_\\1[0-9][0-9][0-9][a-z]_\\d{8}_.'")
     print("")
     print("Warning: Some normal pattern will not work as expected. Don't use '*' and '+'")
     print("         because they will result in IDs of unknown (=1) length.")
@@ -63,30 +64,30 @@ def generator(ast):
     # we can get random choices with random.randint(a,b) for example
     txt = ""
     for x in range(0, len(ast)):
-        if ast[x][0] == LITERAL:
+        if ast[x][0] == _constants.LITERAL:
             txt = txt + chr(ast[x][1])
-        elif ast[x][0] == IN:
+        elif ast[x][0] == _constants.IN:
             txt = txt + generator(ast[x][1])
-        elif ast[x][0] == RANGE:
+        elif ast[x][0] == _constants.RANGE:
             # return one character from that range
             min_char = ast[x][1][0]
             max_char = ast[x][1][1]
             txt = txt + chr(random.randint(min_char, max_char))
-        elif ast[x][0] == MAX_REPEAT:
+        elif ast[x][0] == _constants.MAX_REPEAT:
             # do this a couple of times
             mr = ast[x][1]
             for y in range(0, mr[0]):
                 txt = txt + generator(mr[2])
-        elif ast[x][0] == SUBPATTERN:
+        elif ast[x][0] == _constants.SUBPATTERN:
             mr = ast[x][1]
             # we will not remember that sub-pattern this is!!!
             patnum = mr[1]
             # we can do this if mr[3][1] is a branch, but it could be IN as well
             # for single characters, in that case we should random choice here
             tt = ""
-            if mr[3][0][0] == BRANCH:
+            if mr[3][0][0] == _constants.BRANCH:
                 tt = generator(mr[3])
-            elif mr[3][0][0] == IN:
+            elif mr[3][0][0] == _constants.IN:
                 mr = mr[3][0][1]
                 choice = random.randint(0, len(mr)-1)
                 tt = generator([mr[choice]]) 
@@ -96,32 +97,32 @@ def generator(ast):
                 tt = generator([mr[3][choice]])
             reference_list.append(tt)
             txt = txt + tt
-        elif ast[x][0] == BRANCH:
+        elif ast[x][0] == _constants.BRANCH:
             # depends on the number of branches, run one of them
             mr = ast[x][1][1]
             choice = random.randint(0, len(mr)-1)
             txt = txt + generator(mr[choice])
-        elif ast[x][0] == GROUPREF:
+        elif ast[x][0] == _constants.GROUPREF:
             if (ast[x][1]-1) not in list(range(0, len(reference_list))):
                 print("Error: unknown reference %d!" % (ast[x][1]))
                 sys.exit(-1)
             # here the index starts with 1!
             txt = txt + reference_list[ast[x][1] - 1]
-        elif ast[x][0] == CATEGORY:
-            if ast[x][1] == CATEGORY_DIGIT:
+        elif ast[x][0] == _constants.CATEGORY:
+            if ast[x][1] == _constants.CATEGORY_DIGIT:
                 txt = txt + \
                     random.choice(("0", "1", "2", "3", "4",
                                    "5", "6", "7", "8", "9"))
-            elif ast[x][1] == CATEGORY_SPACE:
+            elif ast[x][1] == _constants.CATEGORY_SPACE:
                 txt = txt + \
                     random.choice((" ", "\t"))
             else:
                 print("Error: unknown category %s" % (ast[x][1]))
                 sys.exit(-1)
-        elif ast[x][0] == NEGATE:
+        elif ast[x][0] == _constants.NEGATE:
             print("Error: we do not support negated character lists!")
             sys.exit(-1)
-        elif ast[x][0] == ANY:
+        elif ast[x][0] == _constants.ANY:
             all_digit_list = list(
                 map(chr, list(range(ord("0"), ord("9") + 1))))
             all_lchar_list = list(
@@ -199,7 +200,7 @@ def main():
     # if we have no exclusion file but we are asked to generate a long list
     local_exclusion_list = []
 
-    ast = sre_parse.parse(regexp_string)
+    ast = _parser.parse(regexp_string)
     for run in range(0, number):
         gen_string = generator(ast)
         tries = 0
